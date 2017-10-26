@@ -15,13 +15,6 @@ import bd_connect as bd_c
 from threading import Thread
 import glob, os
 
-#should start from the user turning on the wemo
-#all user needs to input is wemo_bd_driver.start()
-#and everything will be done
-#   all of the sensing capabilities of the wemo will be added to buildingdepot
-#   if already there, then simply get the preexisting uid and use it
-#then the driver will periodically receive data from BD, to read it
-#print to file?
 class Driver:
     def __init__(self,bd_url="https://192.168.43.152",uid='FV6U2W0fCFEHz8DlWS3dM1nXxeSrldhzD1eKkbwK',ukey='yk5zKMsn8acF5xFEUyDkM1LGIY1ujy6PnRl7o9a53h0GMkXv39',verify=False,use_cache=True):
         #EVERYTHING WILL WORK IN THIS CODE
@@ -171,7 +164,7 @@ class Driver:
                     payload = self.deck.popleft()
                     r = self.bdc.post_time_series(payload)
                 except IndexError:
-                    print("posting to BD faster than retrieving from WeMo")
+                    #print("posting to BD faster than retrieving from WeMo")
                     sys.exc_clear()
 
     def sense_post(self,freq):
@@ -220,7 +213,7 @@ def main(args):
                         'sense [sample freq]': Read the energy data from the Switch
                             with frequency [sample freq] in Hz and
                             update the metadata on the Building Depot.
-                            [sample freq] is optional and defaults to 50 Hz
+                            [sample freq] is optional and defaults to 2 Hz
                         'on': Switch on the Wemo
                         'off': Switch off the Wemo
                         'listen': listen for actuation events from BD, i.e. toggle wemo when current
@@ -289,7 +282,6 @@ def main(args):
             response={
                 "Device Not Found/Error in fetching data"
             }
-
     elif(args[1]=="listen"):
         Thread(target=state_listener, args=(mydriver, args[1])).start()
     else:

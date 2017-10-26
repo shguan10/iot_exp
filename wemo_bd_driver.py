@@ -12,7 +12,6 @@ import collections
 sys.path.insert(0,'pywemo')
 import pywemo
 import bd_connect as bd_c
-from pprint import pprint
 from threading import Thread
 import glob, os
 
@@ -291,6 +290,8 @@ def main(args):
                 "Device Not Found/Error in fetching data"
             }
 
+    elif(args[1]=="listen"):
+        Thread(target=state_listener, args=(mydriver, args[1])).start()
     else:
         response = {
             "HTTP Error 400": "Bad Request"

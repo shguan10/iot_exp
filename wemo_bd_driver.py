@@ -207,7 +207,7 @@ def state_listener(driver,arg):
             if (wemo_state is not "off"):
                 driver.dev.toggle()
                 started = True
-        elif(started):
+        elif(started or arg=="listen"):
             if (wemo_state is not "off" and bd_state == "0"):
                 driver.dev.toggle()
             elif(wemo_state is "off" and bd_state == "1" or bd_state == "8"):

@@ -50,6 +50,7 @@ class Driver:
 
         #actually initialize the driver
         if(cache_file is not None):
+            print("trying cached driver")
             with open(cache_file) as f:
                 cache_dict = cPickle.load(f)
                 for key in cache_dict:
@@ -188,23 +189,29 @@ def state_listener(driver,arg):
     #   on BD for a mismatch between bd_state and wemo_state
     #   and then toggle the wemo whenever there is a mismatch
     #NOTE driver.dev.toggle() automatically updates the internal model of wemo_state
-    started = False
+    print("listening...")
+    received_initial_cmd = False
     while(True):
         bd_state = driver.retrieve_data(driver.sensors_uuid['state'])
+        driver.dev.update_insight_params()
         wemo_state = driver.dev.get_standby_state()
-        if(not started and arg=="on" and bd_state=="1"):
+        if(not received_initial_cmd and arg=="on" and bd_state=="1"):
             if (wemo_state == "off"):
                 driver.dev.toggle()
-                started = True
-        elif(not started and arg=="off" and bd_state=="0"):
+                received_initial_cmd = True
+                time.sleep(1)
+        elif(not received_initial_cmd and arg=="off" and bd_state=="0"):
             if (wemo_state is not "off"):
                 driver.dev.toggle()
-                started = True
-        elif(started or arg=="listen"):
+                received_initial_cmd = True
+                time.sleep(1)
+        elif(received_initial_cmd or arg=="listen"):
             if (wemo_state is not "off" and bd_state == "0"):
                 driver.dev.toggle()
-            elif(wemo_state is "off" and bd_state == "1" or bd_state == "8"):
+                time.sleep(1)
+            elif(wemo_state is "off" and (bd_state == "1" or bd_state == "8")):
                 driver.dev.toggle()
+                time.sleep(1)
 
 def main(args):
     """
@@ -236,9 +243,10 @@ def main(args):
         mydriver.dev.toggle()
         mydriver.dev.toggle()
         mydriver.bdc.get_access_token()
-        print("using cached driver")
+        print("verified driver")
     except Exception:
         mydriver=Driver(use_cache=False)
+        print Exception
 
     #default response
     response = {

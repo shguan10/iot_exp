@@ -151,5 +151,20 @@ class BD_Connect:
 			return requests.get(url, headers=self.headers, verify=self.verify).json()
 		return r.json()
 
+	def def_post_time_series(self,num):
+		import time
+		payload=[
+            {
+                "sensor_id": "1fe62c32-f950-48a9-a289-e0620e254019",
+                "samples": [
+                    {
+                        "value": str(num),
+                        "time": int(time.time())
+                    }
+                ]
+            }
+        ]
+		self.post_time_series(payload)
+
 #post_sensor(token,name="sudo",building="testb",identifier="sudoidentifier")
 #post_tag_sensor(token, sensorid="9abb78c9-8028-42a2-ae52-358faef1eb2b")

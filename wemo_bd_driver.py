@@ -28,7 +28,7 @@ class Driver:
         #   this will delete the cache and reinitialize a driver
         #at the end of initializing the driver, this will always write self to cache file,
         #   in the form of a dict, and remove the previous cache
-
+        self.used_cache=False
         ts = int(time.time())
 
         #look for cache file
@@ -51,6 +51,7 @@ class Driver:
         #actually initialize the driver
         if(cache_file is not None):
             print("trying cached driver")
+            self.used_cache=True
             with open(cache_file) as f:
                 cache_dict = cPickle.load(f)
                 for key in cache_dict:
@@ -238,15 +239,16 @@ def main(args):
 
     #initialize driver, try to use cache
     mydriver = Driver()
-    try:
-        #test if the driver is valid
-        mydriver.dev.toggle()
-        mydriver.dev.toggle()
-        mydriver.bdc.get_access_token()
-        print("verified driver")
-    except Exception:
-        mydriver=Driver(use_cache=False)
-        print Exception
+    if(mydriver.used_cache):
+        try:
+            #test if the driver is valid
+            mydriver.dev.toggle()
+            mydriver.dev.toggle()
+            mydriver.bdc.get_access_token()
+            print("verified driver")
+        except Exception:
+            mydriver=Driver(use_cache=False)
+            print Exception
 
     #default response
     response = {
